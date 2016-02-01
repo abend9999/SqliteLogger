@@ -1,5 +1,5 @@
 #
-# SQLite Logger v1.0.0
+# SQLite Logger v1.0.1
 # Burp Request and Response Logging
 # by. abend
 #
@@ -62,7 +62,7 @@ class BurpExtender(IBurpExtender, ITab, IHttpListener, IMessageEditorController,
         con = DriverManager.getConnection(jdbc_url)
 
         # create table
-        self.sql = "CREATE TABLE if not exists log(id integer primary key,host text,path text,method text,reqest text,response text);"
+        self.sql = "CREATE TABLE if not exists log(host text,path text,method text,reqest text,response text,time text);"
         statement = con.prepareStatement(self.sql)
         statement.executeUpdate()
         
@@ -127,7 +127,7 @@ class BurpExtender(IBurpExtender, ITab, IHttpListener, IMessageEditorController,
             self._log.add(LogEntry(toolFlag, self._callbacks.saveBuffersToTempFiles(messageInfo),self.reqinfo.getMethod(), self.parsed.netloc, self.parsed.path))
 
 
-            self.sql = "INSERT INTO log(host,path,method,reqest,response) VALUES (?,?,?,?,?);"
+            self.sql = "INSERT INTO log(host,path,method,reqest,response,time) VALUES (?,?,?,?,?,?);"
             statement = con.prepareStatement(self.sql)
 
             statement.setString(1,self.parsed.path)
@@ -135,6 +135,7 @@ class BurpExtender(IBurpExtender, ITab, IHttpListener, IMessageEditorController,
             statement.setString(3,self.reqinfo.getMethod())
             statement.setString(4,self._helpers.bytesToString(messageInfo.getRequest()))
             statement.setString(5,self._helpers.bytesToString(messageInfo.getResponse()))
+            statement.setString(6,str(datetime.datetime.today()))
             statement.executeUpdate()
 
             self.fireTableRowsInserted(row, row)
