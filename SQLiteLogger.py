@@ -62,7 +62,7 @@ class BurpExtender(IBurpExtender, ITab, IHttpListener, IMessageEditorController,
         con = DriverManager.getConnection(jdbc_url)
 
         # create table
-        self.sql = "CREATE TABLE if not exists log(host text,path text,method text,reqest text,response text,time text);"
+        self.sql = "CREATE TABLE if not exists log(host text,path text,method text,request text,response text,time text);"
         statement = con.prepareStatement(self.sql)
         statement.executeUpdate()
         
@@ -117,7 +117,7 @@ class BurpExtender(IBurpExtender, ITab, IHttpListener, IMessageEditorController,
             self.reqinfo = self._helpers.analyzeRequest(messageInfo)
             self.parsed = urlparse.urlparse(self.reqinfo.getUrl().toString())
 
-            print "reqest"
+            print "request"
             print self._helpers.bytesToString(messageInfo.getRequest())
             print ""
             print "req header"
@@ -127,7 +127,7 @@ class BurpExtender(IBurpExtender, ITab, IHttpListener, IMessageEditorController,
             self._log.add(LogEntry(toolFlag, self._callbacks.saveBuffersToTempFiles(messageInfo),self.reqinfo.getMethod(), self.parsed.netloc, self.parsed.path))
 
 
-            self.sql = "INSERT INTO log(host,path,method,reqest,response,time) VALUES (?,?,?,?,?,?);"
+            self.sql = "INSERT INTO log(host,path,method,request,response,time) VALUES (?,?,?,?,?,?);"
             statement = con.prepareStatement(self.sql)
 
             statement.setString(1,self.parsed.path)
